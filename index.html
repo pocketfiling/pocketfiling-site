@@ -716,17 +716,26 @@
     }
   }
 
-  /* Mobile viewport fit. Mockup is the last visible element ending near
-     the small-vh fold. Trust row is hidden on mobile (lives in section 2).
-     Subhead tightened. Mockup compressed: smaller meta, tighter body. */
+  /* Mobile viewport fit. Content-driven layout: top block packs at top,
+     mockup pushed to bottom of 100dvh via margin-top:auto. Hero exactly
+     fills the dynamic visible area (URL bar collapsed or expanded), and
+     section 2 starts immediately after the hero with no dead space. */
   @media (max-width: 767.98px){
     .hero{
-      /* Use 100svh so the hero matches the visible area when the URL bar
-         is showing (real phone state). This makes the mockup end right
-         at the URL-bar fold. Override the prior dvh rule above. */
-      min-height: calc(100svh - var(--nav-h));
+      /* 100dvh adjusts dynamically as the URL bar collapses/expands so
+         the hero always matches the visible area in any browser state.
+         Min-height (not fixed height) so on tiny phones content can
+         overflow naturally rather than clipping. */
+      min-height: calc(100dvh - var(--nav-h));
       padding-top: 16px;
-      padding-bottom: 0;
+      padding-bottom: 14px;
+    }
+    .hero-inner{
+      /* Flex column: top elements pack, mockup pushed to bottom by
+         margin-top:auto on .hero-visual below. */
+      display: flex;
+      flex-direction: column;
+      flex: 1;
     }
     .hero .pill-eyebrow{ margin-bottom: 14px; }
     .hero h1{ margin-top: 10px; }
@@ -741,12 +750,12 @@
       margin-top: 8px;
       font-size: 11.5px;
     }
-    /* Mockup: even rhythm with the signup card above. Same gap on
-       both sides (signup-card to mockup matches mockup to fold). */
+    /* Mockup pushed to bottom of dvh. Gap above is whatever space
+       remains; gap below is the hero's bottom padding (14px). */
     .hero-visual{
-      margin-top: 14px;
+      margin-top: auto;
       margin-bottom: 0;
-      flex: 0 0 auto;
+      padding-top: 18px; /* min gap above mockup even when dvh is tiny */
     }
     .visual-bar{ height: 28px; padding: 0 10px; }
     .visual-bar .filename{ font-size: 10.5px; }
