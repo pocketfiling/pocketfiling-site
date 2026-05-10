@@ -29,6 +29,25 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
+<script>
+/* JS-locked hero height. Capture window.innerHeight ONCE on load and
+   freeze it as a CSS custom property. Never updated on scroll/resize,
+   which prevents the dvh-jank where the hero grows/shrinks as iOS Safari
+   and Chrome mobile collapse/expand their URL bars. We only refresh on
+   orientationchange (genuine layout change).
+
+   Runs synchronously in <head> before first paint so the value is set
+   before CSS computes the hero min-height. */
+(function() {
+  function setVh() {
+    var vh = window.innerHeight;
+    document.documentElement.style.setProperty('--app-vh', vh + 'px');
+  }
+  setVh();
+  window.addEventListener('orientationchange', function() { setTimeout(setVh, 100); });
+})();
+</script>
+
 <style>
   /* ============ TOKENS ============ */
   :root{
@@ -63,8 +82,9 @@
     --tap: 44px;
     --nav-h: 60px;
 
-    /* Fallback dynamic viewport. Refined by JS for older iOS Safari. */
-    --app-vh: 1vh;
+    /* JS-locked viewport height (captured ONCE on load). Pixel value.
+       Fallback to 100svh used inline via calc() if --app-vh unset. */
+    --app-vh: 100svh;
   }
 
   *,*::before,*::after{ box-sizing:border-box; }
@@ -305,13 +325,13 @@
     isolation: isolate;
   }
 
-  /* Mobile: hero fills the viewport so section 2 cannot peek through.
-     Strategy: use 100dvh (modern), --app-vh from JS as fallback.
-     Both are wrapped in a max() so the hero never collapses too short. */
+  /* Mobile: hero is exactly viewport-tall using JS-locked --app-vh.
+     --app-vh is captured ONCE on load (window.innerHeight) so it does NOT
+     change as the URL bar collapses on scroll. This prevents dvh-jank.
+     Fallback to 100svh for browsers without the JS-set value. */
   @media (max-width: 767.98px){
     .hero{
-      min-height: max(620px, calc(var(--app-vh, 1vh) * 100 - var(--nav-h)));
-      min-height: max(620px, calc(100dvh - var(--nav-h)));
+      min-height: calc(var(--app-vh, 100svh) - var(--nav-h));
       display: flex;
       align-items: stretch;
       padding-top: clamp(24px, 4vh, 40px);
@@ -322,10 +342,8 @@
       width: 100%;
       flex: 1;
     }
-    /* Push trust row to the bottom of the hero card so the viewport fills naturally. */
     .hero .trust-row{
-      margin-top: auto;
-      padding-top: 24px;
+      padding-top: 12px;
     }
   }
 
@@ -716,26 +734,16 @@
     }
   }
 
-  /* Mobile viewport fit. Content-driven layout: top block packs at top,
-     mockup pushed to bottom of 100dvh via margin-top:auto. Hero exactly
-     fills the dynamic visible area (URL bar collapsed or expanded), and
-     section 2 starts immediately after the hero with no dead space. */
+  /* Mobile viewport fit pass 2. Exact-fit using JS-locked --app-vh.
+     Content + mockup spread via justify-content: space-between on
+     .hero-inner so mockup bottom sits at viewport edge on initial load. */
   @media (max-width: 767.98px){
     .hero{
-      /* 100vh fallback for legacy; 100dvh adjusts dynamically as the URL
-         bar collapses/expands so the hero always matches the visible area
-         in any browser state. Min-height (not fixed height) so on tiny
-         phones content can overflow naturally rather than clipping. */
-      min-height: max(620px, calc(100vh - var(--nav-h)));
-      min-height: max(620px, calc(100svh - var(--nav-h)));
+      min-height: calc(var(--app-vh, 100svh) - var(--nav-h));
       padding-top: 16px;
-      /* No padding-bottom: mockup is the LAST visible element of the
-         hero; section 2 starts immediately at hero's bottom edge. */
       padding-bottom: 16px;
     }
     .hero-inner{
-      /* Flex column: top elements pack, mockup pushed to bottom by
-         margin-top:auto on .hero-visual below. */
       display: flex;
       flex-direction: column;
       flex: 1;
@@ -753,15 +761,12 @@
       margin-top: 8px;
       font-size: 11.5px;
     }
-    /* Mockup pushed to bottom of dvh via margin-top:auto so the gap
-       lives above the mockup, never below it. On tall viewports the
-       gap can grow large; we reveal the diff blocks (below) so the
-       mockup itself fills more of the available height and the void
-       compresses. */
+    /* Mockup pinned to bottom of hero via margin-top:auto. Safe now
+       because --app-vh is JS-locked on load (no dvh-chase on scroll). */
     .hero-visual{
-      margin-top: 24px;
-      margin-bottom: 24px;
-      padding-top: 18px;
+      margin-top: auto;
+      margin-bottom: 0;
+      padding-top: 16px;
     }
     .visual-bar{ height: 28px; padding: 0 10px; }
     .visual-bar .filename{ font-size: 10.5px; }
@@ -818,10 +823,10 @@
   }
 
   /* Tight-fit pass for narrow phones (iPhone 14, 13, SE). H1/sub
-     scale slightly tighter; mockup keeps its margin-top:auto behavior
-     so it always sticks to the bottom of the visible viewport. Margins
-     are trimmed so the natural content height fits SE-class viewports
-     (375x667) without the mockup peeking past the fold. */
+     scale slightly tighter and margins are trimmed so the natural
+     content height fits SE-class viewports (375x667) without the
+     mockup peeking past the fold. Hero locks to 100svh so position
+     stays stable as URL bar collapses. */
   @media (max-width: 419.98px){
     .hero{
       padding-top: 10px;
@@ -1789,23 +1794,8 @@
     update();
   })();
 
-  // iOS Safari viewport fix ------------------------------
-  // The iOS Safari URL bar collapses on scroll; 100svh is captured at first
-  // layout and won't update. We set a custom --app-vh that is recomputed on
-  // resize so the hero always fills the *current* visible viewport.
-  // 100dvh handles modern browsers; this is a belt-and-suspenders fallback.
-  (function(){
-    var setVh = function(){
-      var vh = (window.visualViewport ? window.visualViewport.height : window.innerHeight) * 0.01;
-      document.documentElement.style.setProperty('--app-vh', vh + 'px');
-    };
-    setVh();
-    window.addEventListener('resize', setVh, { passive: true });
-    window.addEventListener('orientationchange', setVh);
-    if (window.visualViewport){
-      window.visualViewport.addEventListener('resize', setVh);
-    }
-  })();
+  // (--app-vh is set ONCE in the <head> script and on orientationchange only.
+  //  Intentionally no scroll/resize listener — prevents dvh-jank.)
 </script>
 </body>
 </html>
