@@ -717,16 +717,14 @@
   }
 
   /* Mobile viewport fit. Mockup is the last visible element ending near
-     the dvh fold. Trust row is hidden on mobile (it lives implicitly in
-     section 2's "every public US company" beat). Subhead tightened.
-     Mockup compressed: smaller meta, tighter body, no diff blocks. */
+     the small-vh fold. Trust row is hidden on mobile (lives in section 2).
+     Subhead tightened. Mockup compressed: smaller meta, tighter body. */
   @media (max-width: 767.98px){
     .hero{
-      /* Cap to actual visible viewport so the hero never overflows past
-         the URL bar on real phones. Use small-vh so the cap is the
-         smallest viewport (URL bar visible). */
-      min-height: 0;
-      max-height: calc(100svh - var(--nav-h));
+      /* Use 100svh so the hero matches the visible area when the URL bar
+         is showing (real phone state). This makes the mockup end right
+         at the URL-bar fold. Override the prior dvh rule above. */
+      min-height: calc(100svh - var(--nav-h));
       padding-top: 16px;
       padding-bottom: 0;
     }
