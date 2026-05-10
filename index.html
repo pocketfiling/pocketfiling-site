@@ -30,17 +30,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <script>
-/* JS-locked hero height. Capture window.innerHeight ONCE on load and
-   freeze it as a CSS custom property. Never updated on scroll/resize,
-   which prevents the dvh-jank where the hero grows/shrinks as iOS Safari
-   and Chrome mobile collapse/expand their URL bars. We only refresh on
-   orientationchange (genuine layout change).
+/* Hero height strategy: lock --app-vh ONCE on load using visualViewport.height
+   (the actually-visible viewport), falling back to innerHeight for older
+   browsers. visualViewport excludes browser chrome on Chrome mobile (bottom
+   URL bar) — this is the fix for the mockup-overflow bug where innerHeight
+   includes the bottom Chrome bar and produces a too-tall hero.
 
-   Runs synchronously in <head> before first paint so the value is set
-   before CSS computes the hero min-height. */
+   We do NOT update on visualViewport resize: that would cause the hero to
+   grow/shrink as the URL bar collapses on scroll (dvh-jank). Locking on
+   first paint gives a stable layout. Only refreshed on orientationchange
+   (genuine layout change). CSS uses var(--app-vh, 100svh) as fallback. */
 (function() {
   function setVh() {
-    var vh = window.innerHeight;
+    var vh = (window.visualViewport ? window.visualViewport.height : window.innerHeight);
     document.documentElement.style.setProperty('--app-vh', vh + 'px');
   }
   setVh();
@@ -198,7 +200,21 @@
       0 0 0 1px rgba(110,123,255,0.30),
       0 8px 24px -8px rgba(110,123,255,0.55);
   }
-  .btn-indigo:hover{ background: #5d6bff; }
+  .btn-indigo:hover{
+    background: #5d6bff;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.14) inset,
+      0 0 0 1px rgba(110,123,255,0.42),
+      0 12px 32px -8px rgba(110,123,255,0.70);
+  }
+  .btn-indigo:focus-visible{
+    outline: 0;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.14) inset,
+      0 0 0 2px var(--bg),
+      0 0 0 4px var(--indigo-2),
+      0 8px 24px -8px rgba(110,123,255,0.55);
+  }
   .btn-ghost{
     background: transparent; color: var(--fg);
     border-color: var(--line-2);
@@ -440,6 +456,41 @@
   }
   .hero-sub strong{ color: var(--fg); font-weight: 500; }
 
+  /* Hero entrance animation. Fade + slide-up on first paint, staggered.
+     Disabled when prefers-reduced-motion. Uses opacity/transform so it
+     doesn't trigger reflows on other content. */
+  @keyframes heroFadeUp{
+    from{ opacity: 0; transform: translateY(8px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
+  .hero .pill-eyebrow,
+  .hero h1,
+  .hero-sub,
+  .cta-row,
+  .hero-fine,
+  .hero-visual,
+  .hero .trust-row{
+    animation: heroFadeUp .55s cubic-bezier(.2,.7,.2,1) both;
+  }
+  .hero .pill-eyebrow{ animation-delay: 0ms; }
+  .hero h1{ animation-delay: 60ms; }
+  .hero-sub{ animation-delay: 120ms; }
+  .cta-row{ animation-delay: 180ms; }
+  .hero-fine{ animation-delay: 220ms; }
+  .hero-visual{ animation-delay: 280ms; }
+  .hero .trust-row{ animation-delay: 340ms; }
+  @media (prefers-reduced-motion: reduce){
+    .hero .pill-eyebrow,
+    .hero h1,
+    .hero-sub,
+    .cta-row,
+    .hero-fine,
+    .hero-visual,
+    .hero .trust-row{
+      animation: none;
+    }
+  }
+
   /* CTA row -------------------------------------------------- */
   .cta-row{
     margin: 32px 0 0;
@@ -479,7 +530,12 @@
     outline: 0;
     transition: border-color .15s ease, background .15s ease;
   }
-  .cta-row input:focus{ border-color: var(--indigo-line); background: rgba(255,255,255,0.06); }
+  .cta-row input:focus{
+    border-color: var(--indigo);
+    background: rgba(255,255,255,0.06);
+    box-shadow: 0 0 0 4px rgba(110,123,255,0.18);
+  }
+  .cta-row input:focus-visible{ outline: 0; }
   .cta-row input::placeholder{ color: var(--muted-2); font-size: 16px; }
   .cta-row .btn{ width: 100%; height: 54px; min-height: 54px; font-size: 15px; border-radius: 12px; }
   @media (min-width: 560px){
@@ -1737,3 +1793,66 @@
     </div>
   </div>
 </footer>
+
+<!-- ============ STICKY MOBILE CTA ============ -->
+<div class="sticky-cta" id="stickyCta" role="region" aria-label="Start free">
+  <div class="meta">
+    <strong>Start free</strong>
+    1 ticker free forever · No card required
+  </div>
+  <a href="https://app.pocketfiling.com/watchlist" class="btn btn-indigo">Start free</a>
+</div>
+
+<script>
+  // Hamburger -------------------------------------------
+  (function(){
+    var btn = document.getElementById('hamburger');
+    var menu = document.getElementById('mobileMenu');
+    if(!btn || !menu) return;
+    btn.addEventListener('click', function(){
+      var open = menu.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(open));
+      menu.setAttribute('aria-hidden', String(!open));
+      btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    });
+    menu.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', function(){
+        menu.classList.remove('open');
+        btn.setAttribute('aria-expanded','false');
+        menu.setAttribute('aria-hidden','true');
+        btn.setAttribute('aria-label','Open menu');
+      });
+    });
+  })();
+
+  // Sticky mobile CTA ------------------------------------
+  (function(){
+    var cta = document.getElementById('stickyCta');
+    var hero = document.getElementById('top');
+    if(!cta || !hero) return;
+    var isMobile = function(){ return window.matchMedia('(max-width: 767.98px)').matches; };
+    function update(){
+      if(!isMobile()){
+        cta.classList.remove('visible');
+        document.body.classList.remove('has-sticky');
+        return;
+      }
+      var rect = hero.getBoundingClientRect();
+      if(rect.bottom < 40){
+        cta.classList.add('visible');
+        document.body.classList.add('has-sticky');
+      } else {
+        cta.classList.remove('visible');
+        document.body.classList.remove('has-sticky');
+      }
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  })();
+
+  // (--app-vh is set ONCE in the <head> script and on orientationchange only.
+  //  Intentionally no scroll/resize listener — prevents dvh-jank.)
+</script>
+</body>
+</html>
