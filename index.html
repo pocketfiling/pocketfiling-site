@@ -722,13 +722,16 @@
      section 2 starts immediately after the hero with no dead space. */
   @media (max-width: 767.98px){
     .hero{
-      /* 100dvh adjusts dynamically as the URL bar collapses/expands so
-         the hero always matches the visible area in any browser state.
-         Min-height (not fixed height) so on tiny phones content can
-         overflow naturally rather than clipping. */
+      /* 100vh fallback for legacy; 100dvh adjusts dynamically as the URL
+         bar collapses/expands so the hero always matches the visible area
+         in any browser state. Min-height (not fixed height) so on tiny
+         phones content can overflow naturally rather than clipping. */
+      min-height: calc(100vh - var(--nav-h));
       min-height: calc(100dvh - var(--nav-h));
       padding-top: 16px;
-      padding-bottom: 14px;
+      /* No padding-bottom: mockup is the LAST visible element of the
+         hero; section 2 starts immediately at hero's bottom edge. */
+      padding-bottom: 0;
     }
     .hero-inner{
       /* Flex column: top elements pack, mockup pushed to bottom by
@@ -750,12 +753,15 @@
       margin-top: 8px;
       font-size: 11.5px;
     }
-    /* Mockup pushed to bottom of dvh. Gap above is whatever space
-       remains; gap below is the hero's bottom padding (14px). */
+    /* Mockup pushed to bottom of dvh via margin-top:auto so the gap
+       lives above the mockup, never below it. On tall viewports the
+       gap can grow large; we reveal the diff blocks (below) so the
+       mockup itself fills more of the available height and the void
+       compresses. */
     .hero-visual{
       margin-top: auto;
       margin-bottom: 0;
-      padding-top: 18px; /* min gap above mockup even when dvh is tiny */
+      padding-top: 18px;
     }
     .visual-bar{ height: 28px; padding: 0 10px; }
     .visual-bar .filename{ font-size: 10.5px; }
@@ -783,23 +789,57 @@
     .hero .trust-row{ display: none; }
   }
 
+  /* Tall mobile viewports (Safari with collapsed URL bar, Pro Max).
+     Reveal one or two diff blocks inside the mockup so it fills more
+     of the available height instead of leaving a tall void above it.
+     Section 2 still sits immediately below the hero. */
+  @media (max-width: 767.98px) and (min-height: 780px){
+    .hero-visual .diff-block{
+      display: block;
+      margin-top: 10px;
+      padding: 8px 12px 9px;
+      border-radius: 8px;
+    }
+    .hero-visual .diff-block.removed,
+    .hero-visual .diff-block.shifted{ display: none; }
+    .hero-visual .diff-block .diff-label{
+      font-size: 10.5px;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+    .hero-visual .diff-block .diff-line{
+      font-size: 11.5px;
+      line-height: 1.35;
+    }
+  }
+  @media (max-width: 767.98px) and (min-height: 900px){
+    .hero-visual .diff-block.removed{ display: block; }
+  }
+
   /* Tight-fit pass for narrow phones (iPhone 14, 13, SE). H1/sub
      scale slightly tighter; mockup keeps its margin-top:auto behavior
-     so it always sticks to the bottom of the visible viewport. */
+     so it always sticks to the bottom of the visible viewport. Margins
+     are trimmed so the natural content height fits SE-class viewports
+     (375x667) without the mockup peeking past the fold. */
   @media (max-width: 419.98px){
     .hero{
-      padding-top: 14px;
+      padding-top: 10px;
     }
+    .hero .pill-eyebrow{ margin-bottom: 10px; }
     .hero h1{
       font-size: clamp(2.05rem, 8.6vw, 5rem);
       line-height: 1.02;
+      margin-top: 4px;
+      padding-bottom: 4px;
     }
     .hero-sub{
       margin-top: 8px;
       font-size: 13.5px;
       line-height: 1.36;
     }
+    .cta-row{ margin-top: 12px; }
     .hero-fine{ margin-top: 6px; }
+    .hero-visual{ padding-top: 10px; }
     .email-body{ padding: 8px 12px 10px; }
     .email-meta{
       gap: 2px 10px;
