@@ -1,0 +1,1678 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>PocketFiling. Plain-English summary of public SEC filings.</title>
+<meta name="description" content="A plain-English diff of each new 10-K and 10-Q against the prior filing. Emailed when EDGAR posts. No dashboard to log into. Compliance-friendly copy for advisers." />
+<meta name="theme-color" content="#000000" />
+
+<link rel="canonical" href="https://pocketfiling.com/" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="PocketFiling" />
+<meta property="og:title" content="PocketFiling. Plain-English summary of public SEC filings." />
+<meta property="og:description" content="See what changed in each new 10-K and 10-Q. Delivered when EDGAR posts. No dashboard." />
+<meta property="og:url" content="https://pocketfiling.com/" />
+<meta property="og:image" content="https://pocketfiling.com/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="PocketFiling. Plain-English summary of public SEC filings." />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="PocketFiling. Plain-English summary of public SEC filings." />
+<meta name="twitter:description" content="See what changed in each new 10-K and 10-Q. Delivered when EDGAR posts. No dashboard." />
+<meta name="twitter:image" content="https://pocketfiling.com/og.png" />
+<meta name="twitter:image:alt" content="PocketFiling. Plain-English summary of public SEC filings." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* ============ TOKENS ============ */
+  :root{
+    --bg: #07070a;
+    --bg-1: #0b0b10;
+    --bg-2: #101017;
+    --bg-card: rgba(255,255,255,0.025);
+    --line: rgba(255,255,255,0.07);
+    --line-2: rgba(255,255,255,0.12);
+    --line-3: rgba(255,255,255,0.18);
+    --fg: #f5f5f7;
+    --fg-2: #d8d8de;
+    --fg-3: #a8a8b0;
+    --muted: #7a7a82;
+    --muted-2: #5a5a62;
+
+    --indigo: #6e7bff;
+    --indigo-2: #9ba3ff;
+    --indigo-glow: rgba(110,123,255,0.30);
+    --indigo-dim: rgba(110,123,255,0.12);
+    --indigo-line: rgba(110,123,255,0.32);
+
+    --red: #ff8a8a;
+    --red-dim: rgba(255,138,138,0.10);
+    --red-line: rgba(255,138,138,0.28);
+    --green: #8eecb6;
+    --green-dim: rgba(142,236,182,0.08);
+    --green-line: rgba(142,236,182,0.24);
+
+    --maxw: 1180px;
+    --pad: clamp(20px, 4vw, 40px);
+    --tap: 44px;
+    --nav-h: 60px;
+
+    /* Fallback dynamic viewport. Refined by JS for older iOS Safari. */
+    --app-vh: 1vh;
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; }
+  html, body{
+    margin:0; padding:0;
+    background:var(--bg);
+    color:var(--fg);
+  }
+  body{
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection{ background: var(--indigo); color:#fff; }
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:inherit; cursor:pointer; }
+  img,svg{ display:block; max-width:100%; }
+
+  .wrap{
+    width:100%;
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 0 var(--pad);
+  }
+
+  h1,h2,h3,h4{
+    margin:0; font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+
+  /* ============ ACCESSIBILITY ============ */
+  .sr-only{
+    position:absolute; width:1px; height:1px;
+    padding:0; margin:-1px; overflow:hidden;
+    clip:rect(0,0,0,0); white-space:nowrap; border:0;
+  }
+  .skip{
+    position:absolute; left:50%; top:8px;
+    transform:translate(-50%, -120%);
+    background:var(--indigo); color:#fff;
+    padding:10px 16px; border-radius:8px;
+    font-size:14px; font-weight:500;
+    z-index:100;
+    transition:transform .15s ease;
+  }
+  .skip:focus{ transform:translate(-50%, 0); outline:2px solid #fff; outline-offset:2px; }
+  :focus-visible{ outline:2px solid var(--indigo); outline-offset:2px; border-radius:4px; }
+
+  /* ============ MICROTYPE ============ */
+  .mono{
+    font-family: 'JetBrains Mono', monospace;
+    font-feature-settings: "zero", "ss03";
+  }
+  .eyebrow{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .eyebrow .dot{
+    width:6px; height:6px; border-radius:50%;
+    background: var(--indigo);
+    box-shadow: 0 0 0 4px rgba(110,123,255,0.18);
+  }
+  .pill-eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    height: 28px; padding: 0 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--line-2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+  .pill-eyebrow .dot{
+    width:6px; height:6px; border-radius:50%;
+    background: var(--indigo);
+    box-shadow: 0 0 0 3px rgba(110,123,255,0.18);
+  }
+
+  /* ============ BUTTONS ============ */
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    min-height: var(--tap); height: 44px;
+    padding: 0 18px;
+    font-size: 14px; font-weight: 500;
+    border-radius: 8px;
+    border: 1px solid var(--line-2);
+    background: #fff; color: #0a0a0b;
+    transition: background .15s ease, transform .1s ease, border-color .15s ease, box-shadow .2s ease;
+    white-space: nowrap;
+    letter-spacing: -0.005em;
+  }
+  .btn:hover{ background:#e9e9ee; }
+  .btn:active{ transform: translateY(1px); }
+  .btn-indigo{
+    background: var(--indigo);
+    color: #fff;
+    border-color: transparent;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.10) inset,
+      0 0 0 1px rgba(110,123,255,0.30),
+      0 8px 24px -8px rgba(110,123,255,0.55);
+  }
+  .btn-indigo:hover{ background: #5d6bff; }
+  .btn-ghost{
+    background: transparent; color: var(--fg);
+    border-color: var(--line-2);
+  }
+  .btn-ghost:hover{ background: rgba(255,255,255,0.04); border-color: var(--line-3); }
+  .btn-sm{
+    height: 36px; min-height: 36px;
+    padding: 0 12px; font-size: 13px; border-radius: 7px;
+  }
+  .btn .arrow{
+    transition: transform .15s ease;
+  }
+  .btn:hover .arrow{ transform: translateX(2px); }
+
+  /* ============ NAV ============ */
+  .nav{
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(7,7,10,0.72);
+    backdrop-filter: saturate(140%) blur(14px);
+    -webkit-backdrop-filter: saturate(140%) blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    height: var(--nav-h);
+  }
+  .brand{
+    display:inline-flex; align-items:center; gap:9px;
+    font-size: 14.5px; font-weight: 600; letter-spacing: -0.01em;
+    color: var(--fg);
+  }
+  .brand-mark{
+    width: 18px; height: 18px; border-radius: 5px;
+    background: linear-gradient(135deg, var(--indigo) 0%, #4d5cff 100%);
+    position: relative;
+    box-shadow: 0 0 0 1px rgba(110,123,255,0.30), 0 4px 12px -4px rgba(110,123,255,0.6);
+  }
+  .brand-mark::after{
+    content: ""; position: absolute;
+    top: 4px; right: 4px;
+    width: 6px; height: 6px;
+    border-radius: 2px;
+    background: #07070a;
+  }
+  .nav-center{
+    display:flex; gap:28px; align-items:center;
+    font-size: 13.5px; color: var(--muted);
+  }
+  .nav-center a{ transition: color .15s ease; padding: 4px 2px; }
+  .nav-center a:hover{ color: var(--fg); }
+  .nav-right{ display:flex; align-items:center; gap:14px; }
+  .nav-signin{
+    font-size: 13.5px; color: var(--muted); padding: 4px 2px;
+  }
+  .nav-signin:hover{ color: var(--fg); }
+
+  .hamburger{
+    display: none;
+    width: var(--tap); height: var(--tap);
+    border-radius: 8px;
+    background: transparent; border: 1px solid var(--line-2);
+    align-items:center; justify-content:center;
+    color: var(--fg);
+  }
+  .hamburger svg{ width: 18px; height: 18px; }
+
+  .mobile-menu{
+    display: none;
+    padding: 10px var(--pad) 20px;
+    border-top: 1px solid var(--line);
+    background: var(--bg);
+  }
+  .mobile-menu.open{ display: block; }
+  .mobile-menu a{
+    display: block; min-height: var(--tap);
+    padding: 12px 0;
+    font-size: 15px; color: var(--fg-2);
+    border-bottom: 1px solid var(--line);
+  }
+  .mobile-menu .actions{ margin-top: 14px; }
+  .mobile-menu .actions .btn{ width: 100%; }
+
+  @media (max-width: 767.98px){
+    .nav-center, .nav-right .nav-signin, .nav-right > .btn{ display: none; }
+    .hamburger{ display: inline-flex; }
+  }
+
+  /* ============ SECTION SCAFFOLD ============ */
+  section{ position: relative; }
+  .sec{
+    padding: clamp(72px, 9vw, 120px) 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .sec-head{
+    display:flex; flex-direction:column; gap: 16px;
+    margin-bottom: clamp(40px, 5vw, 64px);
+    max-width: 56ch;
+  }
+  .sec-head h2{
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(38px, 5vw, 56px);
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+  }
+  .sec-head h2 em{
+    font-style: italic;
+    color: var(--fg);
+    font-weight: 400;
+  }
+  .sec-head p{
+    color: var(--fg-3);
+    font-size: 16px;
+    margin: 0;
+    max-width: 56ch;
+    line-height: 1.6;
+  }
+
+  /* ============ HERO ============ */
+  .hero{
+    position: relative;
+    border-bottom: 1px solid var(--line);
+    padding: clamp(40px, 6vw, 80px) 0 clamp(48px, 7vw, 96px);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* Mobile: hero fills the viewport so section 2 cannot peek through.
+     Strategy: use 100dvh (modern), --app-vh from JS as fallback.
+     Both are wrapped in a max() so the hero never collapses too short. */
+  @media (max-width: 767.98px){
+    .hero{
+      min-height: max(620px, calc(var(--app-vh, 1vh) * 100 - var(--nav-h)));
+      min-height: max(620px, calc(100dvh - var(--nav-h)));
+      display: flex;
+      align-items: stretch;
+      padding-top: clamp(24px, 4vh, 40px);
+      padding-bottom: clamp(20px, 3vh, 32px);
+    }
+    .hero-inner{
+      display:flex; flex-direction: column;
+      width: 100%;
+      flex: 1;
+    }
+    /* Push trust row to the bottom of the hero card so the viewport fills naturally. */
+    .hero .trust-row{
+      margin-top: auto;
+      padding-top: 24px;
+    }
+  }
+
+  /* Background layers ----------------------------------------- */
+  .hero-bg{
+    position: absolute; inset: 0;
+    pointer-events: none;
+    z-index: -1;
+  }
+  /* fine grid */
+  .hero-bg::before{
+    content: ""; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 70% 70% at 50% 30%, #000 35%, transparent 78%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 30%, #000 35%, transparent 78%);
+    opacity: .6;
+  }
+  /* indigo glow */
+  .hero-bg::after{
+    content: ""; position: absolute;
+    top: -20%; left: 50%;
+    width: 1100px; height: 600px;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse at center,
+      rgba(110,123,255,0.18) 0%,
+      rgba(110,123,255,0.08) 30%,
+      transparent 60%);
+    filter: blur(20px);
+  }
+  /* grain */
+  .hero-grain{
+    position: absolute; inset: 0;
+    pointer-events: none;
+    opacity: .035;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.6'/></svg>");
+  }
+
+  .hero-inner{
+    position: relative;
+    text-align: left;
+    max-width: 940px;
+    margin: 0 auto;
+  }
+  @media (min-width: 768px){
+    .hero-inner{ text-align: center; }
+  }
+
+  .hero .pill-eyebrow{ margin-bottom: 22px; }
+
+  .hero h1{
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(40px, 7.2vw, 80px);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    max-width: 18ch;
+    color: var(--fg);
+  }
+  @media (min-width: 768px){
+    .hero h1{ margin-left:auto; margin-right:auto; }
+  }
+  .hero h1 em{
+    font-style: italic;
+    color: var(--indigo-2);
+    /* subtle gradient on accent word */
+    background: linear-gradient(180deg, var(--indigo-2) 0%, var(--indigo) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  @media (max-width: 639.98px){
+    .hero h1{
+      font-size: clamp(2.25rem, 9.5vw, 5rem); /* ~37px at 390px, prevents 10-Q orphan wrap */
+      max-width: none;
+      line-height: 1.04;
+      letter-spacing: -0.01em;
+    }
+  }
+
+  .hero-sub{
+    margin: 22px 0 0;
+    color: var(--fg-3);
+    font-size: clamp(15px, 1.4vw, 17px);
+    line-height: 1.45;
+    max-width: 56ch;
+    letter-spacing: -0.005em;
+  }
+  @media (min-width: 768px){
+    .hero-sub{ margin-left:auto; margin-right:auto; }
+  }
+  .hero-sub strong{ color: var(--fg); font-weight: 500; }
+
+  /* CTA row -------------------------------------------------- */
+  .cta-row{
+    margin: 32px 0 0;
+    display: flex; flex-direction: column; gap: 10px;
+    width: 100%; max-width: 480px;
+  }
+  @media (min-width: 768px){
+    .cta-row{ margin-left: auto; margin-right: auto; }
+  }
+  @media (min-width: 560px){
+    .cta-row{
+      flex-direction: row;
+      align-items: center;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid var(--line-2);
+      border-radius: 12px;
+      padding: 6px;
+      gap: 12px;
+      transition: border-color .15s ease, background .15s ease;
+    }
+    .cta-row:focus-within{
+      border-color: var(--indigo-line);
+      background: rgba(255,255,255,0.04);
+    }
+  }
+  .cta-row input{
+    flex: 1;
+    min-width: 0; width: 100%;
+    height: 54px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--line-2);
+    color: var(--fg);
+    font: inherit;
+    font-size: 16px;
+    padding: 0 18px;
+    outline: 0;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .cta-row input:focus{ border-color: var(--indigo-line); background: rgba(255,255,255,0.06); }
+  .cta-row input::placeholder{ color: var(--muted-2); font-size: 16px; }
+  .cta-row .btn{ width: 100%; height: 54px; min-height: 54px; font-size: 15px; border-radius: 12px; }
+  @media (min-width: 560px){
+    .cta-row input{
+      border: 0; border-radius: 6px;
+      background: transparent;
+      height: 42px;
+      font-size: 15px;
+      padding: 0 14px;
+    }
+    .cta-row input::placeholder{ font-size: 15px; }
+    .cta-row .btn{ width: auto; height: 42px; min-height: 42px; font-size: 14px; border-radius: 8px; }
+  }
+  .hero-fine{
+    margin: 12px 0 0;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.5;
+    text-align: left;
+  }
+  @media (min-width: 768px){ .hero-fine{ text-align: center; } }
+
+  /* Product visual: sample email card ------------------------ */
+  .hero-visual{
+    margin: 44px auto 0;
+    max-width: 720px;
+    perspective: 1600px;
+    position: relative;
+  }
+  @media (max-width: 767.98px){
+    .hero-visual{
+      margin-top: 32px;
+      max-width: 100%;
+    }
+  }
+  .visual-card{
+    background: linear-gradient(180deg, #0e0e15 0%, #08080d 100%);
+    border: 1px solid var(--line-2);
+    border-radius: 14px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.04) inset,
+      0 30px 80px -20px rgba(0,0,0,0.6),
+      0 0 0 1px rgba(110,123,255,0.06);
+    overflow: hidden;
+    text-align: left;
+  }
+  .visual-bar{
+    display:flex; align-items:center; justify-content: space-between;
+    height: 36px;
+    padding: 0 14px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(255,255,255,0.015);
+  }
+  .visual-bar .dots{
+    display:flex; gap: 6px;
+  }
+  .visual-bar .dots span{
+    width: 9px; height: 9px; border-radius: 50%;
+    background: rgba(255,255,255,0.10);
+  }
+  .visual-bar .filename{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+  .email-body{
+    padding: 22px clamp(18px, 3vw, 28px);
+  }
+  .email-meta{
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 4px 14px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+  .email-meta dt{
+    text-transform: uppercase;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    color: var(--muted-2);
+    align-self: center;
+    margin: 0;
+  }
+  .email-meta dd{
+    color: var(--fg-2);
+    margin: 0;
+    align-self: center;
+  }
+  .email-meta dd .ticker{
+    color: var(--fg);
+    font-weight: 500;
+  }
+  .email-meta .subject dd{
+    color: var(--fg);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    letter-spacing: -0.005em;
+    line-height: 1.4;
+  }
+
+  .email-summary{
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--fg-2);
+    margin: 0 0 22px;
+    letter-spacing: -0.005em;
+  }
+
+  .diff-block{
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+    margin-top: 4px;
+  }
+  .diff-block + .diff-block{ margin-top: 18px; }
+  .diff-label{
+    display:flex; align-items:center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .diff-label .count{
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid currentColor;
+    opacity: 0.85;
+  }
+  .diff-block.added .diff-label{ color: var(--red); }
+  .diff-block.removed .diff-label{ color: var(--green); }
+  .diff-block.shifted .diff-label{ color: var(--indigo-2); }
+
+  .diff-line{
+    display: grid;
+    grid-template-columns: 14px 1fr;
+    gap: 10px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--fg-2);
+    padding: 4px 0;
+  }
+  .diff-line .marker{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+  }
+  .diff-block.added .diff-line .marker{ color: var(--red); }
+  .diff-block.removed .diff-line .marker{ color: var(--green); }
+
+  .diff-shift .old{
+    color: var(--muted);
+    text-decoration: line-through;
+    text-decoration-color: rgba(255,138,138,0.4);
+  }
+  .diff-shift .new{
+    color: var(--fg);
+  }
+
+  .email-foot{
+    margin-top: 22px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    display:flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+  }
+  .email-foot a{
+    color: var(--fg-2);
+    border-bottom: 1px solid var(--line-2);
+  }
+
+  /* Mobile rhythm. Spacing/sizing values informed by Claude Design export. */
+  @media (max-width: 767.98px){
+    .hero{ padding-top: 20px; padding-bottom: 16px; }
+    .hero .pill-eyebrow{ margin-bottom: 0; align-self: center; }
+    .hero h1{
+      margin-top: 18px;
+      padding-bottom: 6px; /* clear italic Q descender */
+    }
+    .hero-sub{
+      margin-top: 14px;
+      line-height: 1.4;
+      font-size: 14.5px;
+      max-width: 340px;
+    }
+    .cta-row{ margin-top: 16px; }
+    .hero-fine{
+      font-size: 12px;
+      margin-top: 10px;
+      color: var(--muted-2);
+      letter-spacing: -0.005em;
+    }
+    /* Collapse the mockup to chrome bar + meta + 1 summary line */
+    .hero-visual{
+      margin-top: 12px;
+      margin-bottom: 0;
+    }
+    .visual-card{
+      border-radius: 12px;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.04),
+        0 1px 0 rgba(0,0,0,0.4),
+        0 30px 60px -16px rgba(0,0,0,0.85),
+        0 60px 80px -40px rgba(110,123,255,0.12);
+    }
+    .visual-bar{
+      height: 32px;
+      padding: 0 12px;
+      gap: 8px;
+    }
+    .visual-bar .filename{ font-size: 11px; }
+    .email-body{
+      padding: 10px 14px 12px;
+    }
+    .email-meta{
+      grid-template-columns: 56px 1fr;
+      gap: 4px 12px;
+      padding: 0 0 8px;
+      margin-bottom: 10px;
+      font-size: 11px;
+      border-bottom: 1px dashed var(--line);
+    }
+    .email-meta .subject dd{
+      font-size: 12.5px;
+      line-height: 1.35;
+    }
+    .email-summary{
+      font-size: 13px;
+      line-height: 1.45;
+      margin: 0;
+      color: #d2d2d8;
+      letter-spacing: -0.005em;
+    }
+    .hero-visual .diff-block,
+    .hero-visual .email-foot{
+      display: none;
+    }
+    /* Pull trust row tight to the mockup so hero ends near fold */
+    .hero .trust-row{
+      padding-top: 12px;
+      margin-top: 12px;
+    }
+  }
+
+  /* Mobile signup card. Values lifted from Claude Design hero export
+     (stacked layout, indigo-tinted card gradient, indigo input glow,
+     radial-highlight primary button). Stripe-style email-led signup. */
+  @media (max-width: 559.98px){
+    .cta-row{
+      padding: 18px;
+      background:
+        linear-gradient(180deg, rgba(110,123,255,0.08) 0%, rgba(110,123,255,0.02) 35%, rgba(255,255,255,0.015) 100%),
+        linear-gradient(180deg, #0c0c12 0%, #08080d 100%);
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 18px;
+      gap: 10px;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 1px 0 rgba(0,0,0,0.4),
+        0 24px 48px -16px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(110,123,255,0.05);
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .cta-row input{
+      min-height: 60px;
+      height: 60px;
+      padding: 0 18px;
+      font-size: 17px;
+      border: 1px solid rgba(110, 123, 255, 0.45);
+      border-radius: 12px;
+      background: linear-gradient(180deg, #0a0a10 0%, #07070c 100%);
+      letter-spacing: -0.01em;
+      box-shadow:
+        inset 0 0 0 1px rgba(110,123,255,0.08),
+        0 0 0 4px rgba(110,123,255,0.06);
+    }
+    .cta-row input:focus{
+      border-color: var(--indigo);
+      box-shadow:
+        inset 0 0 0 1px rgba(110,123,255,0.18),
+        0 0 0 4px rgba(110,123,255,0.16);
+    }
+    .cta-row input::placeholder{ font-size: 17px; color: #6c6c76; }
+    .cta-row .btn{
+      width: 100%;
+      min-height: 56px;
+      height: 56px;
+      font-size: 16px;
+      border-radius: 12px;
+      letter-spacing: -0.005em;
+      font-weight: 600;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.22) 0%, transparent 70%),
+        linear-gradient(180deg, #7d8aff 0%, #6171ff 50%, #4f5de6 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.4),
+        inset 0 -1px 0 rgba(0,0,0,0.25),
+        0 1px 0 rgba(0,0,0,0.4),
+        0 10px 24px -8px rgba(110,123,255,0.55),
+        0 0 0 1px rgba(110,123,255,0.4);
+    }
+  }
+
+  /* trust row ------------------------------------------------ */
+  .trust-row{
+    list-style: none; padding: 0;
+    margin: 36px 0 0;
+    display: flex; flex-wrap: wrap; gap: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .trust-row li{
+    padding: 4px 14px;
+    border-right: 1px solid var(--line);
+    line-height: 1.3;
+  }
+  .trust-row li:first-child{ padding-left: 0; }
+  .trust-row li:last-child{ border-right: 0; padding-right: 0; }
+  @media (min-width: 768px){ .trust-row{ justify-content: center; } }
+  @media (max-width: 520px){
+    .trust-row{
+      gap: 0;
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      margin-top: 24px;
+    }
+    .trust-row li{
+      border-right: 0;
+      padding: 0 8px;
+      position: relative;
+    }
+    .trust-row li:first-child{ padding-left: 0; }
+    .trust-row li:last-child{ padding-right: 0; }
+    .trust-row li + li::before{
+      content: "·";
+      position: absolute; left: -2px; top: 0;
+      color: var(--muted-2);
+    }
+  }
+
+  /* ============ STATS ============ */
+  .stat-band{
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .stats{
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 768px){
+    .stats{ grid-template-columns: repeat(3, 1fr); }
+  }
+  .stat{
+    padding: 40px 24px;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  .stat:last-child{ border-bottom: 0; }
+  @media (min-width: 768px){
+    .stat{ border-bottom: 0; border-right: 1px solid var(--line); padding: 56px 32px; }
+    .stat:last-child{ border-right: 0; }
+  }
+  .stat .lead{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+    margin-bottom: 16px;
+  }
+  .stat .val{
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(48px, 6.5vw, 76px);
+    line-height: 1;
+    margin: 0 0 14px;
+    letter-spacing: -0.025em;
+    color: var(--fg);
+  }
+  .stat.primary .val{
+    background: linear-gradient(180deg, var(--indigo-2) 0%, var(--indigo) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat .lbl{
+    color: var(--fg-3);
+    font-size: 15px;
+    line-height: 1.55;
+    max-width: 32ch;
+  }
+
+  /* ============ STEPS ============ */
+  .steps{
+    display: grid;
+    grid-template-columns: 1fr;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  @media (min-width: 768px){
+    .steps{ grid-template-columns: repeat(3, 1fr); }
+  }
+  .step{
+    padding: 32px 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .step:last-child{ border-bottom: 0; }
+  @media (min-width: 768px){
+    .step{ border-bottom: 0; border-right: 1px solid var(--line); padding: 40px 32px; }
+    .step:last-child{ border-right: 0; }
+  }
+  .step-num{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--indigo-2);
+    margin-bottom: 22px;
+    display:flex; align-items:center; gap: 10px;
+  }
+  .step-num .bar{ flex: 1; height: 1px; background: var(--line); }
+  .step h3{
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(22px, 2.4vw, 28px);
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+    color: var(--fg);
+  }
+  .step p{
+    color: var(--fg-3);
+    font-size: 15px;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* ============ EXAMPLES ============ */
+  .cards{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  @media (min-width: 900px){ .cards{ grid-template-columns: 1fr 1fr; gap: 24px; } }
+
+  .card{
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 26px;
+    position: relative;
+    display: flex; flex-direction: column;
+    transition: border-color .2s ease, transform .2s ease;
+  }
+  .card:hover{ border-color: var(--line-2); }
+  @media (max-width: 520px){ .card{ padding: 22px; } }
+  .card .sample-tag{
+    position: absolute; top: 16px; right: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    padding: 4px 8px;
+    border: 1px solid var(--line-2);
+    border-radius: 4px;
+    color: var(--muted);
+    background: rgba(255,255,255,0.02);
+    font-weight: 500;
+  }
+  .card-head{
+    display:flex; align-items:center; gap: 10px;
+    margin-bottom: 8px;
+    padding-right: 80px;
+  }
+  .ticker{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--fg);
+  }
+  .ftype{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    padding: 3px 7px;
+    border-radius: 4px;
+    border: 1px solid var(--indigo-line);
+    background: var(--indigo-dim);
+    color: var(--indigo-2);
+    letter-spacing: 0.04em;
+  }
+  .card-sum{
+    color: var(--fg-2);
+    font-size: 15px;
+    line-height: 1.55;
+    margin: 8px 0 20px;
+    letter-spacing: -0.005em;
+  }
+  .sections{
+    display:flex; flex-direction: column; gap: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+  .sect{ display:grid; grid-template-columns: 1fr; gap: 6px; }
+  .sect-label{
+    display:flex; align-items:center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .sect-label .count{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    border: 1px solid var(--line-2);
+    color: var(--muted);
+  }
+  .sect.new .sect-label{ color: var(--red); }
+  .sect.new .sect-label .count{
+    border-color: var(--red-line); background: var(--red-dim); color: var(--red);
+  }
+  .sect.removed .sect-label{ color: var(--green); }
+  .sect.removed .sect-label .count{
+    border-color: var(--green-line); background: var(--green-dim); color: var(--green);
+  }
+  .sect.shifts .sect-label{ color: var(--indigo-2); }
+  .sect.shifts .sect-label .count{
+    border-color: var(--indigo-line); background: var(--indigo-dim); color: var(--indigo-2);
+  }
+  .sect.metrics .sect-label{ color: var(--muted); }
+
+  .sect ul{
+    list-style: none; padding: 0; margin: 4px 0 0;
+    display:flex; flex-direction: column; gap: 8px;
+  }
+  .sect li{
+    display:flex; gap: 10px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--fg-2);
+  }
+  .sect li::before{
+    content: ""; flex: 0 0 auto;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--muted-2);
+    margin-top: 9px;
+  }
+  .sect.new li::before{ background: var(--red); }
+  .sect.removed li::before{ background: var(--green); }
+  .sect.shifts li::before{ background: var(--indigo-2); }
+
+  .sect-note{ font-size: 14px; color: var(--muted); padding: 2px 0 0; }
+
+  .card-foot{
+    margin-top: 20px; padding-top: 16px;
+    border-top: 1px solid var(--line);
+    display:flex; justify-content: space-between; gap: 10px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+  .card-foot a{
+    color: var(--fg-2);
+    transition: color .15s ease;
+    padding: 4px 0;
+  }
+  .card-foot a:hover{ color: var(--indigo-2); }
+
+  /* ============ PRICING ============ */
+  .pricing{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  @media (min-width: 768px){ .pricing{ grid-template-columns: 1fr 1fr; gap: 20px; } }
+  .plan{
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 32px 28px;
+    display:flex; flex-direction: column;
+    position: relative;
+  }
+  .plan.pro{
+    border-color: var(--indigo-line);
+    background:
+      linear-gradient(180deg, rgba(110,123,255,0.04) 0%, transparent 30%),
+      var(--bg-1);
+  }
+  .plan .tier{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .plan.pro .tier{ color: var(--indigo-2); }
+  .plan h3{
+    font-family: 'Instrument Serif', serif;
+    font-size: 30px; line-height: 1.1;
+    margin: 12px 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .plan .price{
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(42px, 5vw, 60px);
+    line-height: 1;
+    margin: 18px 0 10px;
+    letter-spacing: -0.025em;
+    color: var(--fg);
+  }
+  .plan .price .u{
+    color: var(--muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    margin-left: 8px;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .plan .desc{
+    color: var(--fg-3);
+    font-size: 15px;
+    margin: 0 0 24px;
+    max-width: 38ch;
+    line-height: 1.55;
+  }
+  .plan ul{
+    list-style: none; padding: 0; margin: 0 0 28px;
+    display:flex; flex-direction: column; gap: 12px;
+  }
+  .plan ul li{
+    display:flex; gap: 12px; align-items: flex-start;
+    font-size: 15px;
+    color: var(--fg-2);
+    line-height: 1.55;
+  }
+  .plan ul li svg{
+    flex: 0 0 auto;
+    margin-top: 4px;
+    color: var(--indigo-2);
+  }
+  .plan .btn{ width: 100%; margin-top: auto; }
+  @media (min-width: 768px){
+    .plan .btn{ width: auto; align-self: flex-start; min-width: 200px; }
+  }
+
+  .firm-tier{
+    margin-top: 28px;
+    padding: 22px 24px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    color: var(--fg-2);
+    font-size: 15px;
+    line-height: 1.55;
+    background: var(--bg-1);
+  }
+  .firm-tier a{
+    color: var(--indigo-2);
+    border-bottom: 1px solid var(--indigo-line);
+  }
+  .firm-tier a:hover{ color: var(--fg); border-bottom-color: var(--fg); }
+
+  /* ============ FOOTER ============ */
+  footer{
+    padding: clamp(64px, 7vw, 88px) 0 40px;
+    border-top: 1px solid var(--line);
+  }
+  .foot-top{
+    display: grid;
+    grid-template-columns: 1fr; gap: 32px;
+    padding-bottom: 36px;
+    border-bottom: 1px solid var(--line);
+  }
+  @media (min-width: 640px){
+    .foot-top{ grid-template-columns: 1fr 1fr; gap: 32px 24px; }
+  }
+  @media (min-width: 900px){
+    .foot-top{ grid-template-columns: 1.4fr 1fr 1fr 1fr; }
+  }
+  .foot-brand .brand{ margin-bottom: 16px; }
+  .foot-brand p{
+    color: var(--muted);
+    font-size: 13.5px;
+    margin: 0;
+    max-width: 36ch;
+    line-height: 1.55;
+  }
+  .foot-col h5{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    margin: 0 0 16px;
+  }
+  .foot-col ul{
+    list-style: none; padding: 0; margin: 0;
+    display:flex; flex-direction: column; gap: 10px;
+  }
+  .foot-col a{
+    color: var(--fg-2);
+    font-size: 13.5px;
+    transition: color .15s ease;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .foot-col a:hover{ color: var(--indigo-2); }
+
+  .foot-legal{
+    padding-top: 28px;
+    display: grid; gap: 14px;
+    color: var(--muted-2);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  @media (min-width: 768px){
+    .foot-legal{ grid-template-columns: 1fr auto; align-items: flex-start; }
+  }
+  .foot-legal p{ margin: 0; max-width: 80ch; }
+  .foot-legal .copy{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+  }
+
+  /* ============ STICKY MOBILE CTA ============ */
+  .sticky-cta{
+    position: fixed; left: 0; right: 0; bottom: 0;
+    z-index: 60;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+    background: rgba(7,7,10,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line-2);
+    display: none;
+    align-items: center; gap: 10px;
+    transform: translateY(110%);
+    transition: transform .25s ease;
+  }
+  .sticky-cta.visible{ transform: translateY(0); }
+  .sticky-cta .meta{
+    flex: 1; min-width: 0;
+    font-size: 12px; color: var(--muted); line-height: 1.3;
+  }
+  .sticky-cta .meta strong{
+    color: var(--fg); display: block;
+    font-size: 13px; font-weight: 500;
+  }
+  .sticky-cta .btn{ flex: 0 0 auto; padding: 0 14px; }
+
+  @media (max-width: 767.98px){
+    .sticky-cta{ display: flex; }
+    body.has-sticky{ padding-bottom: 72px; }
+  }
+
+  /* prefers-reduced-motion --------------------------------- */
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip">Skip to content</a>
+
+<!-- ============ NAV ============ -->
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a href="#top" class="brand" aria-label="PocketFiling home">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>PocketFiling</span>
+    </a>
+    <nav class="nav-center" aria-label="Primary">
+      <a href="#how">How it works</a>
+      <a href="#examples">Examples</a>
+      <a href="#pricing">Pricing</a>
+    </nav>
+    <div class="nav-right">
+      <a href="https://app.pocketfiling.com/watchlist" class="nav-signin">Sign in</a>
+      <a href="https://app.pocketfiling.com/watchlist" class="btn btn-sm btn-indigo">Start free</a>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M3 6h18M3 12h18M3 18h18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <div class="wrap" style="padding:0;">
+      <a href="#how">How it works</a>
+      <a href="#examples">Examples</a>
+      <a href="#pricing">Pricing</a>
+      <a href="https://app.pocketfiling.com/watchlist">Sign in</a>
+      <div class="actions">
+        <a href="https://app.pocketfiling.com/watchlist" class="btn btn-indigo">Start free</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="hero-grain" aria-hidden="true"></div>
+
+  <div class="wrap hero-inner">
+    <span class="pill-eyebrow">
+      <span class="dot" aria-hidden="true"></span>
+      Built for investors and advisers
+    </span>
+
+    <h1>See what changed in each new <em>10-K</em> and&nbsp;<em>10-Q</em>.</h1>
+
+    <p class="hero-sub">
+      A plain-English filing diff against the prior period. <strong>New risks, removed risks, notable shifts,</strong> and <strong>changed metrics,</strong> emailed to you when EDGAR posts. No dashboard to log into.
+    </p>
+
+    <form class="cta-row" action="https://app.pocketfiling.com/watchlist" method="get" data-signup>
+      <label for="email-hero" class="sr-only">Work email</label>
+      <input id="email-hero" type="email" name="email" required placeholder="you@yourfirm.com" aria-label="Work email" autocomplete="email" />
+      <button class="btn btn-indigo" type="submit">
+        Watch your first ticker
+        <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M5 12h14M13 6l6 6-6 6"/>
+        </svg>
+      </button>
+    </form>
+    <p class="hero-fine">Free for 1 ticker. Magic-link sign-in. No card.</p>
+
+    <!-- ===== Product visual: sample diff email ===== -->
+    <div class="hero-visual" aria-label="Sample PocketFiling diff email">
+      <div class="visual-card">
+        <div class="visual-bar">
+          <div class="dots" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div class="filename">pocketfiling.com / inbox</div>
+          <div style="width:36px"></div>
+        </div>
+
+        <div class="email-body">
+          <dl class="email-meta">
+            <dt>From</dt>
+            <dd>diffs@pocketfiling.com</dd>
+            <dt>Filing</dt>
+            <dd><span class="ticker">NVDA</span> &nbsp;·&nbsp; 10-Q &nbsp;·&nbsp; period ending Oct 27</dd>
+            <dt class="subject">Subject</dt>
+            <dd class="subject">NVDA 10-Q: 2 new risks, 1 removed, 3 notable shifts</dd>
+          </dl>
+
+          <p class="email-summary">
+            Guidance reiterated. Supply-constraint language tightened. New disclosure on export-license risk for advanced GPUs.
+          </p>
+
+          <div class="diff-block added">
+            <div class="diff-label">New risks <span class="count">2</span></div>
+            <div class="diff-line"><span class="marker">+</span><span>Export-license uncertainty around advanced GPUs in named markets.</span></div>
+            <div class="diff-line"><span class="marker">+</span><span>Increased customer concentration in the top 3 accounts.</span></div>
+          </div>
+
+          <div class="diff-block removed">
+            <div class="diff-label">Removed risks <span class="count">1</span></div>
+            <div class="diff-line"><span class="marker">&minus;</span><span>Prior-quarter language on component shortages dropped.</span></div>
+          </div>
+
+          <div class="diff-block shifted">
+            <div class="diff-label">Notable shifts <span class="count">3</span></div>
+            <div class="diff-line diff-shift"><span class="marker">~</span><span><span class="old">"Strong demand"</span> <span class="new">"elevated demand, backlog-driven."</span></span></div>
+          </div>
+
+          <div class="email-foot">
+            <span>Filed Nov 21 · Auto-delivered 4 min after EDGAR posted</span>
+            <a href="#examples">View filing on EDGAR &rsaquo;</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ul class="trust-row" aria-label="Product facts">
+      <li>Every public US company</li>
+      <li>Email, not a dashboard</li>
+      <li>Compliance-friendly format</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ STATS ============ -->
+<section class="stat-band" aria-label="Why a diff">
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat">
+        <div class="lead">Filing length</div>
+        <div class="val">187 pages</div>
+        <div class="lbl">Median length of a recent 10-K.</div>
+      </div>
+      <div class="stat">
+        <div class="lead">Time to read</div>
+        <div class="val">4 hours</div>
+        <div class="lbl">Typical time for a careful analyst to read one end-to-end.</div>
+      </div>
+      <div class="stat primary">
+        <div class="lead">PocketFiling email</div>
+        <div class="val">~60 seconds</div>
+        <div class="lbl">Typical time to read the diff in your inbox.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="sec" id="how">
+  <div class="wrap">
+    <header class="sec-head">
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>01 · How it works</span>
+      <h2>Three steps. Then <em>emails that make sense.</em></h2>
+    </header>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">STEP 01<span class="bar" aria-hidden="true"></span></div>
+        <h3>Add the tickers you track.</h3>
+        <p>Up to 25 on Pro. We watch SEC EDGAR for their next 10-K or 10-Q.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">STEP 02<span class="bar" aria-hidden="true"></span></div>
+        <h3>We diff each new filing against the prior one.</h3>
+        <p>The pipeline compares the new filing to the same issuer's last one and extracts new risk factors, removed risk factors, notable shifts in language, and material changes to reported metrics.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">STEP 03<span class="bar" aria-hidden="true"></span></div>
+        <h3>You get an email when the diff is ready.</h3>
+        <p>Click through to view the full filing on EDGAR.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EXAMPLES ============ -->
+<section class="sec" id="examples">
+  <div class="wrap">
+    <header class="sec-head">
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>02 · Examples</span>
+      <h2>What a typical diff <em>email looks like.</em></h2>
+      <p>Sample content. Your email uses the actual language from the filing.</p>
+    </header>
+
+    <div class="cards">
+
+      <article class="card">
+        <span class="sample-tag" aria-label="Sample card">SAMPLE</span>
+        <div class="card-head">
+          <span class="ticker">NVDA</span>
+          <span class="ftype">10-Q</span>
+        </div>
+        <p class="card-sum">Guidance reiterated. Supply constraints language tightened. New disclosure on export-license risk.</p>
+
+        <div class="sections">
+          <div class="sect new">
+            <div class="sect-label">New risks <span class="count">2</span></div>
+            <ul>
+              <li>Export-license uncertainty around advanced GPUs to named markets.</li>
+              <li>Increased customer concentration in top 3 accounts.</li>
+            </ul>
+          </div>
+          <div class="sect removed">
+            <div class="sect-label">Removed risks <span class="count">1</span></div>
+            <ul>
+              <li>Prior-quarter language on component shortages dropped.</li>
+            </ul>
+          </div>
+          <div class="sect shifts">
+            <div class="sect-label">Notable shifts <span class="count">3</span></div>
+            <ul>
+              <li>"Strong demand" to "elevated demand, backlog-driven."</li>
+              <li>Added explicit mention of allocation decisions.</li>
+              <li>Softer tone on near-term pricing power.</li>
+            </ul>
+          </div>
+          <div class="sect metrics">
+            <div class="sect-label">Metric changes</div>
+            <div class="sect-note">Revenue +17% YoY. Gross margin &minus;60bps QoQ. Opex +9% QoQ.</div>
+          </div>
+        </div>
+
+        <div class="card-foot">
+          <a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001045810&type=10-Q&dateb=&owner=include&count=40" aria-label="View NVDA filing on EDGAR">View filing on EDGAR &rsaquo;</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <span class="sample-tag" aria-label="Sample card">SAMPLE</span>
+        <div class="card-head">
+          <span class="ticker">KO</span>
+          <span class="ftype">10-Q</span>
+        </div>
+        <p class="card-sum">Organic revenue growth in line with guidance. FX headwind widened. Earn-out on Fairlife acquisition raised.</p>
+
+        <div class="sections">
+          <div class="sect new">
+            <div class="sect-label">New risks <span class="count">1</span></div>
+            <ul>
+              <li>Added emerging-market currency volatility as a material risk factor.</li>
+            </ul>
+          </div>
+          <div class="sect removed">
+            <div class="sect-label">Removed risks <span class="count">0</span></div>
+            <div class="sect-note">No prior risk factors removed this quarter.</div>
+          </div>
+          <div class="sect shifts">
+            <div class="sect-label">Notable shifts <span class="count">2</span></div>
+            <ul>
+              <li>Removed supply-chain recovery language.</li>
+              <li>Tightened language on promotional pricing.</li>
+            </ul>
+          </div>
+          <div class="sect metrics">
+            <div class="sect-label">Metric changes</div>
+            <div class="sect-note">Organic revenue +6%. North America margin +80bps. EMEA margin &minus;40bps.</div>
+          </div>
+        </div>
+
+        <div class="card-foot">
+          <a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000021344&type=10-Q&dateb=&owner=include&count=40" aria-label="View KO filing on EDGAR">View filing on EDGAR &rsaquo;</a>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section class="sec" id="pricing">
+  <div class="wrap">
+    <header class="sec-head">
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>03 · Pricing</span>
+      <h2>One price. <em>One upgrade path.</em></h2>
+    </header>
+
+    <div class="pricing">
+      <article class="plan">
+        <div class="tier">Free</div>
+        <h3>Starter</h3>
+        <div class="price">$0<span class="u">forever</span></div>
+        <p class="desc">For watching a single ticker you care about.</p>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg><span>1 ticker</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg><span>One diff email per new 10-K or 10-Q</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg><span>Primary-source link on each email</span></li>
+        </ul>
+        <a href="https://app.pocketfiling.com/watchlist" class="btn btn-ghost">Start free</a>
+      </article>
+
+      <article class="plan pro">
+        <div class="tier">Pro</div>
+        <h3>PocketFiling Pro</h3>
+        <div class="price">$19<span class="u">/ month</span></div>
+        <p class="desc">For investors and advisers watching a real list of issuers.</p>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg><span>Up to 25 tickers</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg><span>Filing diffs for each covered form</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg><span>No contract. Cancel anytime from your inbox.</span></li>
+        </ul>
+        <a href="https://app.pocketfiling.com/watchlist" class="btn btn-indigo">Upgrade to Pro</a>
+      </article>
+    </div>
+
+    <div class="firm-tier">
+      Running a firm that monitors more than 25 tickers? Email <a href="mailto:blake@getpocketfiling.com">blake@getpocketfiling.com</a> to join the Firm waitlist.
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <a href="#top" class="brand" aria-label="PocketFiling home">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>PocketFiling</span>
+        </a>
+        <p>Plain-English filing diffs of public SEC documents, emailed when each new 10-K or 10-Q appears on EDGAR.</p>
+      </div>
+      <div class="foot-col">
+        <h5>Product</h5>
+        <ul>
+          <li><a href="#how">How it works</a></li>
+          <li><a href="#examples">Examples</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="https://app.pocketfiling.com/watchlist">Sign in</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="mailto:blake@getpocketfiling.com">Contact</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Legal</h5>
+        <ul>
+          <li><a href="/terms.html">Terms</a></li>
+          <li><a href="/privacy.html">Privacy</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="foot-legal">
+      <p>
+        PocketFiling summarizes and compares public SEC filings for informational purposes only. Not investment advice, not a recommendation. Summaries may be incomplete or inaccurate. Always verify against the primary SEC EDGAR source before making any investment decision. Past filings do not predict future results.
+      </p>
+      <p class="copy">© 2026 POCKETFILING, INC.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ STICKY MOBILE CTA ============ -->
+<div class="sticky-cta" id="stickyCta" role="region" aria-label="Start free">
+  <div class="meta">
+    <strong>Start free</strong>
+    1 ticker free forever · No card required
+  </div>
+  <a href="https://app.pocketfiling.com/watchlist" class="btn btn-indigo">Start free</a>
+</div>
+
+<script>
+  // Hamburger -------------------------------------------
+  (function(){
+    var btn = document.getElementById('hamburger');
+    var menu = document.getElementById('mobileMenu');
+    if(!btn || !menu) return;
+    btn.addEventListener('click', function(){
+      var open = menu.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(open));
+      menu.setAttribute('aria-hidden', String(!open));
+      btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    });
+    menu.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', function(){
+        menu.classList.remove('open');
+        btn.setAttribute('aria-expanded','false');
+        menu.setAttribute('aria-hidden','true');
+        btn.setAttribute('aria-label','Open menu');
+      });
+    });
+  })();
+
+  // Sticky mobile CTA ------------------------------------
+  (function(){
+    var cta = document.getElementById('stickyCta');
+    var hero = document.getElementById('top');
+    if(!cta || !hero) return;
+    var isMobile = function(){ return window.matchMedia('(max-width: 767.98px)').matches; };
+    function update(){
+      if(!isMobile()){
+        cta.classList.remove('visible');
+        document.body.classList.remove('has-sticky');
+        return;
+      }
+      var rect = hero.getBoundingClientRect();
+      if(rect.bottom < 40){
+        cta.classList.add('visible');
+        document.body.classList.add('has-sticky');
+      } else {
+        cta.classList.remove('visible');
+        document.body.classList.remove('has-sticky');
+      }
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  })();
+
+  // iOS Safari viewport fix ------------------------------
+  // The iOS Safari URL bar collapses on scroll; 100svh is captured at first
+  // layout and won't update. We set a custom --app-vh that is recomputed on
+  // resize so the hero always fills the *current* visible viewport.
+  // 100dvh handles modern browsers; this is a belt-and-suspenders fallback.
+  (function(){
+    var setVh = function(){
+      var vh = (window.visualViewport ? window.visualViewport.height : window.innerHeight) * 0.01;
+      document.documentElement.style.setProperty('--app-vh', vh + 'px');
+    };
+    setVh();
+    window.addEventListener('resize', setVh, { passive: true });
+    window.addEventListener('orientationchange', setVh);
+    if (window.visualViewport){
+      window.visualViewport.addEventListener('resize', setVh);
+    }
+  })();
+</script>
+</body>
+</html>
