@@ -726,12 +726,12 @@
          bar collapses/expands so the hero always matches the visible area
          in any browser state. Min-height (not fixed height) so on tiny
          phones content can overflow naturally rather than clipping. */
-      min-height: calc(100vh - var(--nav-h));
-      min-height: calc(100dvh - var(--nav-h));
+      min-height: max(620px, calc(100vh - var(--nav-h)));
+      min-height: max(620px, calc(100svh - var(--nav-h)));
       padding-top: 16px;
       /* No padding-bottom: mockup is the LAST visible element of the
          hero; section 2 starts immediately at hero's bottom edge. */
-      padding-bottom: 0;
+      padding-bottom: 16px;
     }
     .hero-inner{
       /* Flex column: top elements pack, mockup pushed to bottom by
@@ -759,8 +759,8 @@
        mockup itself fills more of the available height and the void
        compresses. */
     .hero-visual{
-      margin-top: auto;
-      margin-bottom: 0;
+      margin-top: 24px;
+      margin-bottom: 24px;
       padding-top: 18px;
     }
     .visual-bar{ height: 28px; padding: 0 10px; }
