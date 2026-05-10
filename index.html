@@ -789,11 +789,12 @@
     .hero .trust-row{ display: none; }
   }
 
-  /* Tall mobile viewports only (Pro Max, large iPhones). Reveal one
-     diff block at >=860 so the mockup fills the otherwise-empty space
-     above it. Reveal a second at >=920 (Pro Max Safari). Thresholds
-     are conservative so we never push the mockup past the fold. */
-  @media (max-width: 767.98px) and (min-height: 860px){
+  /* Tall mobile viewports only (iPhone 14 Safari full URL bar, Pro Max).
+     Reveal one diff block at >=830 so the mockup fills the otherwise-
+     empty space above it. Reveal a second at >=920 (Pro Max Safari).
+     Threshold 830 is just above PMax_Chr (800) so we never reveal
+     content that would overflow on mid-tall viewports. */
+  @media (max-width: 767.98px) and (min-height: 830px){
     .hero-visual .diff-block{
       display: block;
       margin-top: 10px;
@@ -812,7 +813,7 @@
       line-height: 1.35;
     }
   }
-  @media (max-width: 767.98px) and (min-height: 920px){
+  @media (max-width: 767.98px) and (min-height: 960px){
     .hero-visual .diff-block.removed{ display: block; }
   }
 
