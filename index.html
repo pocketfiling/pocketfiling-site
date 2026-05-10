@@ -789,11 +789,11 @@
     .hero .trust-row{ display: none; }
   }
 
-  /* Tall mobile viewports (Safari with collapsed URL bar, Pro Max).
-     Reveal one or two diff blocks inside the mockup so it fills more
-     of the available height instead of leaving a tall void above it.
-     Section 2 still sits immediately below the hero. */
-  @media (max-width: 767.98px) and (min-height: 780px){
+  /* Tall mobile viewports only (Pro Max, large iPhones). Reveal one
+     diff block at >=860 so the mockup fills the otherwise-empty space
+     above it. Reveal a second at >=920 (Pro Max Safari). Thresholds
+     are conservative so we never push the mockup past the fold. */
+  @media (max-width: 767.98px) and (min-height: 860px){
     .hero-visual .diff-block{
       display: block;
       margin-top: 10px;
@@ -812,7 +812,7 @@
       line-height: 1.35;
     }
   }
-  @media (max-width: 767.98px) and (min-height: 900px){
+  @media (max-width: 767.98px) and (min-height: 920px){
     .hero-visual .diff-block.removed{ display: block; }
   }
 
