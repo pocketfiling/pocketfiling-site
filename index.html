@@ -783,9 +783,9 @@
     .hero .trust-row{ display: none; }
   }
 
-  /* Tight-fit pass for narrow phones (iPhone 14, 13, SE). The hero now
-     ends right at the small-vh fold with the mockup as the last visible
-     element. Even rhythm: card-to-fineprint == fineprint-to-mockup. */
+  /* Tight-fit pass for narrow phones (iPhone 14, 13, SE). H1/sub
+     scale slightly tighter; mockup keeps its margin-top:auto behavior
+     so it always sticks to the bottom of the visible viewport. */
   @media (max-width: 419.98px){
     .hero{
       padding-top: 14px;
@@ -800,7 +800,6 @@
       line-height: 1.36;
     }
     .hero-fine{ margin-top: 6px; }
-    .hero-visual{ margin-top: 10px; }
     .email-body{ padding: 8px 12px 10px; }
     .email-meta{
       gap: 2px 10px;
