@@ -288,7 +288,7 @@
     border-bottom: 1px solid var(--line);
   }
   .mobile-menu .actions{ margin-top: 14px; }
-  .mobile-menu .actions .btn{ width: 100%; }
+  .mobile-menu .actions .btn{ width: 100%; display: inline-flex; align-items: center; justify-content: center; text-align: center; }
 
   @media (max-width: 767.98px){
     .nav-center, .nav-right .nav-signin, .nav-right > .btn{ display: none; }
@@ -589,6 +589,9 @@
     width: 9px; height: 9px; border-radius: 50%;
     background: rgba(255,255,255,0.10);
   }
+  .visual-bar .dots span:nth-child(1){ background: #ff5f57; }
+  .visual-bar .dots span:nth-child(2){ background: #febc2e; }
+  .visual-bar .dots span:nth-child(3){ background: #28c840; }
   .visual-bar .filename{
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px; color: var(--muted);
