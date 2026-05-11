@@ -634,7 +634,7 @@
     color: var(--fg-2);
     letter-spacing: 0.01em;
   }
-  .email-meta .subject dd{
+  .email-meta dd.subject{
     color: var(--fg);
     font-family: 'Inter', sans-serif;
     font-size: 15px;
@@ -786,8 +786,8 @@
       font-size: 11px;
       border-bottom: 1px dashed var(--line);
     }
-    .email-meta .subject dd{
-      font-size: 12.5px;
+    .email-meta dd.subject{
+      font-size: 13px;
       line-height: 1.35;
     }
     .email-summary{
@@ -852,15 +852,17 @@
       margin-bottom: 9px;
       font-size: 10.5px;
     }
-    .email-meta .subject dd{
-      font-size: 12px;
+    .email-meta dd.subject{
+      font-size: 12.5px;
       line-height: 1.3;
     }
     .email-summary{
       font-size: 12.5px;
       line-height: 1.4;
+      padding: 8px 10px;
+      border-radius: 0 5px 5px 0;
       display: -webkit-box;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
