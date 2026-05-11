@@ -627,22 +627,32 @@
   }
   .email-meta dd .ticker{
     color: var(--fg);
-    font-weight: 500;
+    font-weight: 600;
+  }
+  .email-meta dd.filing-id{
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--fg-2);
+    letter-spacing: 0.01em;
   }
   .email-meta .subject dd{
     color: var(--fg);
     font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    letter-spacing: -0.005em;
-    line-height: 1.4;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+    line-height: 1.35;
   }
 
   .email-summary{
-    font-size: 14.5px;
-    line-height: 1.6;
+    font-size: 14px;
+    line-height: 1.55;
     color: var(--fg-2);
     margin: 0 0 22px;
     letter-spacing: -0.005em;
+    padding: 12px 14px;
+    border-left: 2px solid var(--indigo-line);
+    background: var(--indigo-dim);
+    border-radius: 0 6px 6px 0;
   }
 
   .diff-block{
@@ -666,8 +676,8 @@
     border: 1px solid currentColor;
     opacity: 0.85;
   }
-  .diff-block.added .diff-label{ color: var(--red); }
-  .diff-block.removed .diff-label{ color: var(--green); }
+  .diff-block.added .diff-label{ color: var(--green); }
+  .diff-block.removed .diff-label{ color: var(--red); }
   .diff-block.shifted .diff-label{ color: var(--indigo-2); }
 
   .diff-line{
@@ -685,16 +695,28 @@
     color: var(--muted);
     text-align: center;
   }
-  .diff-block.added .diff-line .marker{ color: var(--red); }
-  .diff-block.removed .diff-line .marker{ color: var(--green); }
+  .diff-block.added .diff-line .marker{ color: var(--green); }
+  .diff-block.removed .diff-line .marker{ color: var(--red); }
+  .diff-block.shifted .diff-line .marker{ color: var(--indigo-2); }
+
+  .diff-block.added .diff-line span:not(.marker){ color: var(--fg); }
+  .diff-block.removed .diff-line .strike{
+    color: var(--muted);
+    text-decoration: line-through;
+    text-decoration-color: rgba(255,138,138,0.45);
+  }
 
   .diff-shift .old{
     color: var(--muted);
     text-decoration: line-through;
     text-decoration-color: rgba(255,138,138,0.4);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
   }
   .diff-shift .new{
     color: var(--fg);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
   }
 
   .email-foot{
@@ -1517,33 +1539,32 @@
             <dt>From</dt>
             <dd>diffs@pocketfiling.com</dd>
             <dt>Filing</dt>
-            <dd><span class="ticker">NVDA</span> &nbsp;·&nbsp; 10-Q &nbsp;·&nbsp; period ending Oct 27</dd>
+            <dd class="filing-id"><span class="ticker">NVDA</span> · 10-Q · Q3 FY26 (period ending Oct 27)</dd>
             <dt class="subject">Subject</dt>
-            <dd class="subject">NVDA 10-Q: 2 new risks, 1 removed, 3 notable shifts</dd>
+            <dd class="subject">2 new risks added, 1 removed, 3 notable shifts</dd>
           </dl>
 
           <p class="email-summary">
-            Guidance reiterated. Supply-constraint language tightened. New disclosure on export-license risk for advanced GPUs.
+            NVDA added new export-license risk language tied to advanced GPU shipments to specific Asia-Pacific customers, removed prior CHIPS Act qualifying-investment ambiguity, and tightened supply-constraint guidance.
           </p>
 
           <div class="diff-block added">
             <div class="diff-label">New risks <span class="count">2</span></div>
-            <div class="diff-line"><span class="marker">+</span><span>Export-license uncertainty around advanced GPUs in named markets.</span></div>
-            <div class="diff-line"><span class="marker">+</span><span>Increased customer concentration in the top 3 accounts.</span></div>
+            <div class="diff-line"><span class="marker">+</span><span>"Restrictions on the export of certain advanced AI accelerators to named Asia-Pacific customers..."</span></div>
           </div>
 
           <div class="diff-block removed">
             <div class="diff-label">Removed risks <span class="count">1</span></div>
-            <div class="diff-line"><span class="marker">&minus;</span><span>Prior-quarter language on component shortages dropped.</span></div>
+            <div class="diff-line"><span class="marker">&minus;</span><span class="strike">"Subject to qualifying investment thresholds under the CHIPS Act..."</span></div>
           </div>
 
           <div class="diff-block shifted">
             <div class="diff-label">Notable shifts <span class="count">3</span></div>
-            <div class="diff-line diff-shift"><span class="marker">~</span><span><span class="old">"Strong demand"</span> <span class="new">"elevated demand, backlog-driven."</span></span></div>
+            <div class="diff-line diff-shift"><span class="marker">~</span><span>Supply guidance reiterated, language tightened from <span class="old">"we expect"</span> to <span class="new">"we currently expect."</span></span></div>
           </div>
 
           <div class="email-foot">
-            <span>Filed Nov 21 · Auto-delivered 4 min after EDGAR posted</span>
+            <span>Filed 4 min ago · Read time 2 min</span>
             <a href="#examples">View filing on EDGAR &rsaquo;</a>
           </div>
         </div>
